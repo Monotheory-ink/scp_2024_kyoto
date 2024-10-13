@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapbox with Hover and Click Effect</title>
+    <style>
+        #map {
+            width: 100%;
+            height: 560px;
+        }
+        #header {
+            background-color: #f8f8f8;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        #header svg {
+            display: block;
+            margin: 0 auto;
+            width: 60px;
+            height: auto;
+            color: #82753a;
+        }
+        #searchBox {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1;
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #searchButton {
+            margin-left: 10px;
+        }
+
+        .mapboxgl-popup-content {
+            color: #82753a !important;
+            border-radius: 10px !important;
+        }
+    </style>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet">
+</head>
+<body>
+
+    <header id="header">
+        <!-- SVGを直接埋め込む -->
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 59.78 64.32">
+            <defs>
+                <style>
+                .cls-1 {
+                    fill: currentColor;
+                }
+                </style>
+            </defs>
+            <g>
+                <g id="_レイヤー_1" data-name="レイヤー_1">
+                    <path class="cls-1" d="M.42,64.23v-2.79l5.34-10.07c.27-.5.43-.94.47-1.32s.06-.85.06-1.41c0-.25,0-.52-.01-.8s-.06-.53-.16-.74-.24-.39-.44-.54c-.19-.14-.47-.22-.84-.22-.45,0-.8.13-1.06.38s-.39.62-.39,1.1v1.68H.43v-1.63c0-.62.12-1.2.35-1.74.23-.54.55-1.02.96-1.42.39-.41.85-.73,1.39-.97s1.12-.36,1.74-.36c.77,0,1.44.14,1.99.42s1.01.66,1.38,1.15c.35.48.61,1.04.77,1.65.17.62.25,1.28.25,1.97,0,.5-.01.92-.03,1.26s-.06.66-.12.97-.16.62-.29.93c-.14.31-.32.69-.55,1.13l-4.35,8.39h5.34v2.96H.44l-.02.02Z"/>
+                    <path class="cls-1" d="M17.02,47.83c0-.7.12-1.32.36-1.86s.57-1.01.97-1.39.87-.68,1.41-.89,1.09-.31,1.67-.31,1.14.1,1.67.31,1,.5,1.41.89.73.85.97,1.39.36,1.16.36,1.86v12.13c0,.7-.12,1.32-.36,1.86-.24.54-.57,1.01-.97,1.39-.41.39-.87.68-1.41.89s-1.09.31-1.67.31-1.14-.1-1.67-.31-1-.5-1.41-.89-.73-.85-.97-1.39-.36-1.16-.36-1.86v-12.13ZM19.98,59.96c0,.43.14.78.41,1.06s.62.42,1.05.42.77-.14,1.05-.42c.27-.28.41-.63.41-1.06v-12.13c0-.43-.14-.78-.41-1.06s-.62-.42-1.05-.42-.77.14-1.05.42c-.27.28-.41.63-.41,1.06v12.13Z"/>
+                    <path class="cls-1" d="M33.63,64.23v-2.79l5.34-10.07c.27-.5.43-.94.46-1.32.04-.38.06-.85.06-1.41,0-.25,0-.52-.01-.8s-.06-.53-.16-.74-.24-.39-.43-.54c-.19-.14-.48-.22-.84-.22-.45,0-.8.13-1.06.38s-.39.62-.39,1.1v1.68h-2.96v-1.63c0-.62.12-1.2.35-1.74.23-.54.55-1.02.96-1.42.39-.41.85-.73,1.39-.97s1.12-.36,1.74-.36c.77,0,1.44.14,1.99.42s1.01.66,1.38,1.15c.35.48.6,1.04.77,1.65s.25,1.28.25,1.97c0,.5,0,.92-.03,1.26-.02.34-.06.66-.12.97s-.16.62-.29.93c-.14.31-.32.69-.55,1.13l-4.36,8.39h5.34v2.96h-8.82v.02Z"/>
+                    <path class="cls-1" d="M55.39,64.23v-3.08h-5.89v-2.79l4.27-14.8h3.14l-4.44,14.8h2.93v-5.89h2.96v5.89h1.42v2.79h-1.42v3.08h-2.97Z"/>
+                    <path class="cls-1" d="M5.71,3.96c0-.4-.04-1.13-.47-1.69-.27-.31-.69-.64-1.49-.64-.4,0-.93.09-1.35.51-.53.55-.58,1.29-.58,1.89,0,.47.02,1.26.4,1.86.31.44.84.71,1.22.84l1.42.51c.64.22,1.46.6,1.97,1.31.55.75.62,1.6.62,2.57v.55c0,1.53-.42,2.66-1.02,3.33-.55.58-1.53.98-2.77.98-1.53,0-2.51-.55-2.99-1.22-.67-.89-.67-2.37-.67-2.57v-.55h1.66v.44c0,.42.07,1.15.44,1.64.49.58,1.15.64,1.53.64,1.02,0,1.46-.4,1.71-.69.42-.53.44-1.26.44-1.8v-.6c0-.6-.07-1.38-.44-1.84-.38-.51-1-.75-1.26-.84l-1.69-.6c-.75-.27-1.51-.69-1.93-1.66-.29-.69-.31-1.44-.31-2.2v-.47C.15,2.42.62,1.49,1.26.89c.69-.67,1.57-.89,2.55-.89,2.13,0,3.55,1.38,3.55,3.86v.53h-1.66v-.44h.01Z"/>
+                    <path class="cls-1" d="M13.28.24h3.37c2.79,0,3.84,1.82,3.84,3.95v1.38c0,2-1.29,3.79-3.5,3.79h-2.04v6.41h-1.66V.24h0ZM14.95,7.93h1.57c1.53,0,2.31-1.02,2.31-2.11v-1.84c0-1.42-.73-2.31-2.28-2.31h-1.6v6.26h0Z"/>
+                    <path class="cls-1" d="M31.23,3.59c0-.55-.22-1.95-1.82-1.95-1.75,0-1.91,1.51-1.91,2.35v8.36c0,.55.24,2.02,1.8,2.02.87,0,1.93-.38,1.93-2.17v-.49h1.69v.58c0,2.22-1.02,3.7-3.68,3.7-3.11,0-3.39-2.53-3.39-3.42V3.39C25.85,1.64,27.07.02,29.33.02c1.93,0,3.53.93,3.53,3.39v1h-1.62v-.82h0Z"/>
+                    <path class="cls-1" d="M2.07,21.48v8.25l4.19-8.25h1.69l-3.17,6.19,3.82,9.34h-1.8l-3.04-7.74-1.69,3.28v4.46H.41v-15.53h1.66Z"/>
+                    <path class="cls-1" d="M17.76,30.46v6.54h-1.66v-6.61l-3.24-8.92h1.84l2.26,6.77h.07l2.24-6.77h1.75l-3.26,8.98h0Z"/>
+                    <path class="cls-1" d="M26.13,25.4c0-1.15.09-2.26,1.11-3.22.62-.6,1.51-.93,2.62-.93s2,.33,2.62.93c1.02.95,1.11,2.06,1.11,3.22v7.68c0,1.15-.09,2.26-1.11,3.22-.62.6-1.51.93-2.62.93s-2-.33-2.62-.93c-1.02-.95-1.11-2.06-1.11-3.22v-7.68ZM31.92,25.05c0-.55-.04-1.11-.58-1.62-.31-.31-.82-.55-1.49-.55s-1.18.24-1.49.55c-.53.51-.58,1.06-.58,1.62v8.38c0,.55.04,1.11.58,1.64.31.29.82.53,1.49.53s1.18-.24,1.49-.53c.53-.53.58-1.09.58-1.64v-8.38Z"/>
+                    <path class="cls-1" d="M46.14,21.48v1.53h-2.88v14h-1.66v-14h-2.86v-1.53h7.41-.01Z"/>
+                    <path class="cls-1" d="M51.29,25.4c0-1.15.09-2.26,1.11-3.22.62-.6,1.51-.93,2.62-.93s2,.33,2.62.93c1.02.95,1.11,2.06,1.11,3.22v7.68c0,1.15-.09,2.26-1.11,3.22-.62.6-1.51.93-2.62.93s-2-.33-2.62-.93c-1.02-.95-1.11-2.06-1.11-3.22v-7.68ZM57.08,25.05c0-.55-.04-1.11-.58-1.62-.31-.31-.82-.55-1.49-.55s-1.18.24-1.49.55c-.53.51-.58,1.06-.58,1.62v8.38c0,.55.04,1.11.58,1.64.31.29.82.53,1.49.53s1.18-.24,1.49-.53c.53-.53.58-1.09.58-1.64v-8.38Z"/>
+                </g>
+            </g>
+        </svg>
+    </header>
+
+    <div id="map"></div>
+
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <script>
+        mapboxgl.accessToken = 'pk.eyJ1Ijoic2h1bnRoZW9uIiwiYSI6ImNsb2NlMmI4ZDB4NHQycXFjOGxwdmprZ3QifQ.XiLCgExydMRCD_aEpFKdqw';
+
+        const map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/shuntheon/cm25zrx0i00gp01om6k1n3hj2',
+            center: [135.7744, 35.1836], // 地図の初期位置 (京都、鞍馬)
+            zoom: 10
+        });
+
+        let hoveredStateId = null;
+        let clickedStateId = null;
+        let popup = null;
+
+        // ズームコントロールを追加
+        map.addControl(new mapboxgl.NavigationControl());
+
+            // 現在地表示用のコントロールを追加
+            const geolocate = new mapboxgl.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: true  // 高精度の位置情報を取得
+            },
+            trackUserLocation: true,      // ユーザーの位置を追跡
+            showUserHeading: true         // ユーザーの向きを表示
+        });
+
+        // 現在地ボタンを地図に追加
+        map.addControl(geolocate);
+
+            map.on('load', function () {
+        geolocate.trigger();
+        
+        fetch('./map.geojson')
+            .then(response => response.json())
+            .then(data => {
+                map.addSource('geojson-data', { 'type': 'geojson', 'data': data });
+
+                map.addLayer({
+                    'id': 'polygons',
+                    'type': 'fill',
+                    'source': 'geojson-data',
+                    'paint': { 'fill-color': 'gray', 'fill-opacity': 0 }
+                });
+
+                // ポリゴンのクリック処理
+                map.on('click', 'polygons', function (e) {
+                    const feature = e.features[0];
+
+                    if (currentPopup) {
+                        currentPopup.remove();  // 既存のポップアップがあれば閉じる
+                        currentPopup = null;   // ポップアップをリセット
+                        
+                        // 同じポリゴンをクリックした場合、ポップアップを閉じて終了
+                        if (clickedStateId === feature.id) {
+                            clickedStateId = null; // クリック状態を解除
+                            return;
+                        }
+                    }
+
+                    // 新しいポップアップを表示
+                    currentPopup = new mapboxgl.Popup()
+                        .setLngLat(e.lngLat)
+                        .setHTML(`<strong>ポリゴン情報:</strong><br>${JSON.stringify(feature.properties, null, 2)}`)
+                        .addTo(map);
+                    
+                    clickedStateId = feature.id; // クリックしたポリゴンのIDを記録
+                });
+            });
+    });
+
+        // 地図がロードされたら自動的に現在地を表示
+        map.on('load', function () {
+            geolocate.trigger();  // 現在地を自動的に表示
+        });
+
+        // GeoJSONデータを読み込んで地図に表示
+        let geojsonData = null;
+
+        
+
+        fetch('./map.geojson')  // GeoJSONファイルを指定されたパスで取得
+        .then(response => response.json())
+        .then(data => {
+            geojsonData = data; // 後で検索に使えるようにデータを保存
+
+            map.on('load', function () {
+                // GeoJSONソースを追加
+                map.addSource('geojson-data', {
+                    'type': 'geojson',
+                    'data': geojsonData
+                });
+
+                // 全てのポリゴンを表示するためのレイヤー（グレー色）
+                map.addLayer({
+                    'id': 'polygons',
+                    'type': 'fill',
+                    'source': 'geojson-data',
+                    'paint': {
+                        'fill-color': 'gray',
+                        'fill-opacity': 0
+                    }
+                });
+
+                 // ラインがある場合の処理
+                map.addLayer({
+                    'id': 'lines',
+                    'type': 'line',
+                    'source': 'geojson-data',
+                    'layout': {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    'paint': {
+                        'line-color': '#82753a',
+                        'line-width': 0.25,
+                        'line-opacity': 0.75 // ラインの透明度
+                    }
+                });
+
+                // ホバーとクリック用のレイヤー
+                map.addLayer({
+                    'id': 'hovered-polygon',
+                    'type': 'fill',
+                    'source': 'geojson-data',
+                    'paint': {
+                        'fill-color': '#82753a', // 赤色
+                        'fill-opacity': 0.25 // ホバー時は透明度25%
+                    },
+                    'filter': ['==', ['get', 'name'], ''] // 初期状態は何もフィルターしない
+                });
+
+                // ポリゴンの塗りつぶしレイヤー（クリック時）
+                map.addLayer({
+                    'id': 'clicked-polygon',
+                    'type': 'fill',
+                    'source': 'geojson-data',
+                    'paint': {
+                        'fill-color': '#82753a', // ポリゴンの塗りつぶし色
+                        'fill-opacity': 0.55 // 塗りつぶしの透明度
+                    },
+                    'filter': ['==', ['get', 'name'], ''] // 初期状態ではフィルタなし
+                });
+
+                // ポリゴンの塗りつぶしレイヤー（クリック時）
+                map.addLayer({
+                    'id': 'lines',
+                    'type': 'line',
+                    'source': 'geojson-data',
+                    'layout': {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    'paint': {
+                        'line-color': '#82753a',
+                        'line-width': 10,
+                        'line-opacity': 0.55
+                    },
+                    'filter': ['==', ['get', 'name'], ''] // 初期状態ではフィルタなし
+                });
+
+                // marged-polygon.geojsonファイルを読み込んで、輪郭線を表示
+                fetch('.//no_holes_polygon.geojson')  // GeoJSONファイルを指定されたパスで取得
+                .then(response => response.json())
+                .then(margedData => {
+                // GeoJSONソースを追加
+                map.addSource('merged-polygon-data', {
+                    'type': 'geojson',
+                    'data': margedData
+                });
+
+            // marged-polygon.geojson の輪郭線だけを表示するためのレイヤー
+            map.addLayer({
+                    'id': 'merged-polygon-lines',
+                    'type': 'line',
+                    'source': 'merged-polygon-data',
+                    'layout': {
+                        'line-join': 'round',
+                        'line-cap': 'round'
+                    },
+                    'paint': {
+                        'line-color': '#82753a', // ラインの色を赤に設定
+                        'line-width': 2.3, // ラインの太さを2pxに設定
+                        'line-opacity': 1 // ラインの透明度
+                    }
+                });
+            });
+
+            // ポリゴンホバー時にマウスカーソルをポインターに変更
+map.on('mouseenter', 'polygons', function () {
+    map.getCanvas().style.cursor = 'pointer';  // カーソルをポインターに設定
+});
+
+// ポリゴンからマウスが離れた時にカーソルを元に戻す
+map.on('mouseleave', 'polygons', function () {
+    map.getCanvas().style.cursor = '';  // カーソルをデフォルトに戻す
+});
+
+                // ポリゴンホバー時に name を表示するポップアップ
+                const namePopup = new mapboxgl.Popup({
+                    closeButton: false,
+                    closeOnClick: false
+                });
+
+                // ポリゴンホバー時の挙動を追加
+                map.on('mousemove', 'polygons', function (e) {
+                    if (e.features.length > 0) {
+                        const feature = e.features[0];
+
+                        // 以前ホバーしていたポリゴンがあれば、そのホバー状態を解除
+                        if (hoveredStateId && hoveredStateId !== feature.id) {
+                            map.setFilter('hovered-polygon', ['==', ['get', 'name'], '']);
+                        }
+
+                        // 現在ホバーしているポリゴンの状態を適用
+                        hoveredStateId = feature.id;
+                        map.setFilter('hovered-polygon', ['==', ['get', 'name'], feature.properties.name]);
+
+                        // ホバー時に name をポップアップで表示
+                        namePopup.setLngLat(e.lngLat)
+                            .setText(feature.properties.name)
+                            .addTo(map);
+                    }
+                });
+
+                // マウスがポリゴン全体から離れたときにホバーを解除し、ポップアップを閉じる
+                map.on('mouseleave', 'polygons', function () {
+                    if (hoveredStateId !== null) {
+                        map.setFilter('hovered-polygon', ['==', ['get', 'name'], '']);
+                        hoveredStateId = null;
+                    }
+                    namePopup.remove();  // ポップアップを削除
+                });
+
+                map.on('click', 'polygons', function (e) {
+                    const feature = e.features[0];
+
+                    // クリックされたポリゴンのIDが定義されていない場合、name要素をIDとして設定
+                    if (!feature.id) {
+                        feature.id = feature.properties.name;
+                        console.log(`ポリゴンのIDが undefined だったため、nameプロパティをIDとして使用しました。ID: ${feature.id}`);
+                    }
+
+                    // クリックされたポリゴンのIDをログに表示
+                    console.log(`クリックされたポリゴンのID: ${feature.id}`);
+
+                    // feature.properties.name が undefined かどうかを確認してログに表示
+                    if (!feature.properties.name) {
+                        console.log("feature.properties.name が undefined です。プロパティ名を確認してください。");
+                        console.log("feature.properties の内容: ", feature.properties);
+                    } else {
+                        console.log(`クリックされたポリゴンの名前: ${feature.properties.name}`);
+                    }
+
+                    // クリックしたポリゴンが以前クリックしていたポリゴンと同じ場合、クリック状態を解除
+                    if (clickedStateId === feature.id) {
+                        console.log(`ポリゴン ${feature.id} はすでに選択されています。選択状態を解除します。`);
+                        map.setFilter('clicked-polygon', ['==', ['get', 'name'], '']);
+                        clickedStateId = null;
+                        console.log(`ポリゴン ${feature.id} の選択状態を解除しました。現在の clickedStateId: ${clickedStateId}`);
+
+                        // ポップアップが表示されている場合は閉じる
+                        if (currentPopup) {
+                            currentPopup.remove();
+                            currentPopup = null;
+                        }
+                    } else {
+                        console.log(`ポリゴン ${feature.id} が新しく選択されました。`);
+                        clickedStateId = feature.id;
+                        map.setFilter('clicked-polygon', ['==', ['get', 'name'], feature.properties.name]);
+                        console.log(`ポリゴン ${feature.id} の選択状態を適用しました。現在の clickedStateId: ${clickedStateId}`);
+
+                        // ポリゴンの範囲にズームして中央に表示
+                        const coordinates = feature.geometry.coordinates[0]; // ポリゴンの座標リスト
+
+                        // 座標の最小・最大の緯度経度を計算して範囲を決定
+                        const bounds = coordinates.reduce(function (bounds, coord) {
+                            return bounds.extend(coord);
+                        }, new mapboxgl.LngLatBounds(coordinates[0], coordinates[0]));
+
+                        // ポリゴンの範囲に合わせてズームと中心位置を調整
+                        map.fitBounds(bounds, {
+                            padding: 20,  // 地図の端からポリゴンまでの余白
+                            maxZoom: 15,  // ズームの最大値
+                            duration: 1000  // アニメーションの時間（ミリ秒）
+                        });
+
+                        // ポップアップを新たに作成して表示
+                        if (currentPopup) {
+                            currentPopup.remove();  // 既存のポップアップを閉じる
+                        }
+
+                        currentPopup = new mapboxgl.Popup()
+                            .setLngLat(e.lngLat)
+                            .setHTML(`<strong>ポリゴン情報:</strong><br>${JSON.stringify(feature.properties, null, 2)}`)
+                            .addTo(map);
+                    }
+                });
+
+
+                // ポリゴンをクリックした時にプロパティを表示するポップアップ
+                map.on('click', 'polygons', function (e) {
+                    const feature = e.features[0];
+
+                    // クリックされたポリゴンのIDが定義されていない場合、name要素をIDとして設定
+                    if (!feature.id) {
+                        feature.id = feature.properties.name;
+                    }
+
+                    // クリックしたポリゴンが以前クリックしていたポリゴンと同じ場合、ポップアップを閉じる
+                    if (clickedStateId === feature.id) {
+                        console.log(`ポリゴン ${feature.id} はすでに選択されています。ポップアップを閉じます。`);
+                        if (currentPopup) {
+                            currentPopup.remove();  // 既存のポップアップを閉じる
+                            currentPopup = null;  // currentPopupをリセット
+                        }
+                        clickedStateId = null;  // クリック状態をリセット
+                    } else {
+                        // 新しくポリゴンをクリックした場合、既存のポップアップを閉じて新しいポップアップを表示
+                        clickedStateId = feature.id;
+
+                        if (currentPopup) {
+                            currentPopup.remove();  // 既存のポップアップを閉じる
+                        }
+
+                        // 新しいポップアップを作成して表示
+                        currentPopup = new mapboxgl.Popup()
+                            .setLngLat(e.lngLat)  // ポリゴンのクリック位置にポップアップを表示
+                            .setHTML(`<strong>ポリゴン情報:</strong><br>${JSON.stringify(feature.properties, null, 2)}`)  // プロパティをHTMLとして整形
+                            .addTo(map);
+                    }
+                });
+
+                    if (features.length === 0) {
+                        // ポリゴンのクリック状態をリセット
+                        if (clickedStateId !== null) {
+                            map.setFilter('clicked-polygon', ['==', ['get', 'name'], '']);
+                            clickedStateId = null;
+                        }
+                    }
+                });
+            });
+        });
+
+    </script>
+
+</body>
+</html>
